@@ -23,10 +23,18 @@ export class TradingviewBinanceManager {
 
     switch (command.side) {
       case 'LONG': {
-        return this.futuresLongService.execute(command, pricePrecision, quantity)
+        return this.futuresLongService.execute(
+          command,
+          pricePrecision,
+          quantity
+        )
       }
       case 'SHORT': {
-        return this.futuresShortService.execute(command, pricePrecision, quantity)
+        return this.futuresShortService.execute(
+          command,
+          pricePrecision,
+          quantity
+        )
       }
     }
   }

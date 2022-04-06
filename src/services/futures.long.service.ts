@@ -21,6 +21,8 @@ export class FuturesLongService {
       type: 'MARKET',
     })
 
+    console.log('long position opened')
+
     if (!setTp && !setSl) {
       return
     }
@@ -36,8 +38,8 @@ export class FuturesLongService {
     if (setTp) {
       await this.client.submitNewOrder({
         symbol,
-        side: 'BUY',
-        positionSide: 'SHORT',
+        side: 'SELL',
+        positionSide: 'LONG',
         type: 'TAKE_PROFIT_MARKET' as any,
         stopPrice: takeProfit,
         closePosition: 'true',
@@ -45,13 +47,14 @@ export class FuturesLongService {
         workingType: 'MARK_PRICE',
         priceProtect: 'TRUE',
       })
+      console.log(`set take profit: ${takeProfit}`)
     }
 
     if (setSl) {
       await this.client.submitNewOrder({
         symbol,
-        side: 'BUY',
-        positionSide: 'SHORT',
+        side: 'SELL',
+        positionSide: 'LONG',
         type: 'STOP_MARKET' as any,
         stopPrice: stopLoss,
         closePosition: 'true',
@@ -59,6 +62,7 @@ export class FuturesLongService {
         workingType: 'MARK_PRICE',
         priceProtect: 'TRUE',
       })
+      console.log(`set stop loss: ${stopLoss}`)
     }
   }
 }

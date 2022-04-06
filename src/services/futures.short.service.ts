@@ -21,6 +21,8 @@ export class FuturesShortService {
       type: 'MARKET',
     })
 
+    console.log('short position opened')
+
     if (!setTp && !setSl) {
       return
     }

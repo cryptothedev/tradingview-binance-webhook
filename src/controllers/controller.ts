@@ -24,6 +24,8 @@ export class Controller {
 
       const rawCommand = req.body
 
+      console.log(`raw command ${rawCommand}`)
+
       try {
         if (this.commandsInProgressDict[rawCommand]) {
           console.log('Command is in progress')
@@ -32,6 +34,8 @@ export class Controller {
 
         this.commandsInProgressDict[rawCommand] = true
         const command = parseRawCommand(rawCommand)
+
+        console.log(command)
 
         await this.tradingviewBinanceManager.execute(command)
 
