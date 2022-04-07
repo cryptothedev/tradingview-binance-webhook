@@ -1,6 +1,7 @@
 import { ConfigService } from './config.service'
 import { PositionSide, USDMClient } from 'binance'
 import { Command } from '../models/command'
+import { wait } from '../libs/wait'
 
 export class FuturesService {
   private client: USDMClient
@@ -8,10 +9,6 @@ export class FuturesService {
   constructor(private configService: ConfigService) {
     const { key, secret } = this.configService.getBinanceConfig()
     this.client = new USDMClient({ api_key: key, api_secret: secret })
-  }
-
-  getClient() {
-    return this.client
   }
 
   async setupTrade(command: Command) {
@@ -67,7 +64,119 @@ export class FuturesService {
     return Number(quantity) * leverage
   }
 
-  async calculateTpSl(
+  async long(command: Command, pricePrecision: number, quantity: number) {
+    const { symbol, setTp, setSl } = command
+
+    await this.client.submitNewOrder({
+      symbol,
+      quantity,
+      side: 'BUY',
+      positionSide: 'LONG',
+      type: 'MARKET',
+    })
+
+    console.log('long position opened')
+
+    if (!setTp && !setSl) {
+      return
+    }
+
+    await wait(2)
+
+    const { takeProfit, stopLoss } = await this.calculateTpSl(
+      symbol,
+      'LONG',
+      pricePrecision
+    )
+
+    if (setTp) {
+      await this.client.submitNewOrder({
+        symbol,
+        side: 'SELL',
+        positionSide: 'LONG',
+        type: 'TAKE_PROFIT_MARKET' as any,
+        stopPrice: takeProfit,
+        closePosition: 'true',
+        timeInForce: 'GTC',
+        workingType: 'MARK_PRICE',
+        priceProtect: 'TRUE',
+      })
+      console.log(`set take profit: ${takeProfit}`)
+    }
+
+    if (setSl) {
+      await this.client.submitNewOrder({
+        symbol,
+        side: 'SELL',
+        positionSide: 'LONG',
+        type: 'STOP_MARKET' as any,
+        stopPrice: stopLoss,
+        closePosition: 'true',
+        timeInForce: 'GTC',
+        workingType: 'MARK_PRICE',
+        priceProtect: 'TRUE',
+      })
+      console.log(`set stop loss: ${stopLoss}`)
+    }
+  }
+
+  async short(command: Command, pricePrecision: number, quantity: number) {
+    const { symbol, setTp, setSl } = command
+
+    await this.client.submitNewOrder({
+      symbol,
+      quantity: quantity,
+      side: 'SELL',
+      positionSide: 'SHORT',
+      type: 'MARKET',
+    })
+
+    console.log('short position opened')
+
+    if (!setTp && !setSl) {
+      return
+    }
+
+    await wait(2)
+
+    const { takeProfit, stopLoss } = await this.calculateTpSl(
+      symbol,
+      'SHORT',
+      pricePrecision
+    )
+
+    if (setTp) {
+      await this.client.submitNewOrder({
+        symbol,
+        side: 'BUY',
+        positionSide: 'SHORT',
+        type: 'TAKE_PROFIT_MARKET' as any,
+        stopPrice: takeProfit,
+        closePosition: 'true',
+        timeInForce: 'GTC',
+        workingType: 'MARK_PRICE',
+        priceProtect: 'TRUE',
+      })
+      console.log(`set take profit: ${takeProfit}`)
+    }
+
+    if (setSl) {
+      await this.client.submitNewOrder({
+        symbol,
+        side: 'BUY',
+        positionSide: 'SHORT',
+        type: 'STOP_MARKET' as any,
+        stopPrice: stopLoss,
+        closePosition: 'true',
+        timeInForce: 'GTC',
+        workingType: 'MARK_PRICE',
+        priceProtect: 'TRUE',
+      })
+      console.log(`set stop loss: ${stopLoss}`)
+    }
+  }
+
+  private async calculateTpSl(
     symbol: string,
     side: PositionSide,
     pricePrecision: number
