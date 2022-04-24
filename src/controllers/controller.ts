@@ -42,6 +42,8 @@ export class Controller {
         res.sendStatus(200)
 
         await wait(2)
+      } catch (e) {
+        console.log(JSON.stringify(e))
       } finally {
         this.commandsInProgressDict[rawCommand] = false
       }
