@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "start": "tsc && pm2 start pm2.config.js"
+  },
   "devDependencies": {
     "@types/body-parser": "^1.19.2",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
     "@types/node": "^17.0.23",
+    "pm2": "^5.2.0",
     "prettier": "^2.6.2",
     "typescript": "^4.6.3"
   },
