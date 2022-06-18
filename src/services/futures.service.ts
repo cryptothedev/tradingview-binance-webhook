@@ -59,9 +59,9 @@ export class FuturesService {
 
     const currentPrice = Number(markPrice)
 
-    const quantity = Number(amountUSD / currentPrice).toFixed(quantityPrecision)
+    const quantity = Number(amountUSD / currentPrice * leverage).toFixed(quantityPrecision)
 
-    return Number(quantity) * leverage
+    return Number(quantity)
   }
 
   async long(command: Command, pricePrecision: number, quantity: number) {
