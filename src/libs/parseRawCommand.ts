@@ -2,7 +2,7 @@ import { Command } from '../models/command'
 import { PositionSide } from 'binance'
 
 export function parseRawCommand(rawCommand: string): Command {
-  const [symbol, side, amountUSD, setTp, setSl] = rawCommand.split('_')
+  const [symbol, side, amountUSD, setTp, setSl, onlyOneOrder] = rawCommand.split('_')
 
   if (
     [symbol, side, amountUSD, setTp, setSl].some((value) => value == undefined)
@@ -16,5 +16,6 @@ export function parseRawCommand(rawCommand: string): Command {
     amountUSD: Number(amountUSD),
     setTp: setTp === 'true',
     setSl: setSl === 'true',
+    onlyOneOrder: onlyOneOrder === 'true'
   }
 }

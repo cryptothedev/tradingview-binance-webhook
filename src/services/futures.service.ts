@@ -1,5 +1,5 @@
 import { ConfigService } from './config.service'
-import { PositionSide, USDMClient } from 'binance'
+import { OrderResult, PositionSide, USDMClient } from 'binance'
 import { Command } from '../models/command'
 import { wait } from '../libs/wait'
 
@@ -12,9 +12,15 @@ export class FuturesService {
   }
 
   async setupTrade(command: Command) {
-    const { symbol } = command
+    const { symbol, onlyOneOrder } = command
 
-    await this.cancelOpenOrders(command)
+    const positionOrders = await this.getPositionOrders(command)
+
+    if (onlyOneOrder && positionOrders.length > 0) {
+      return false
+    }
+
+    await this.cancelOpenOrders(command, positionOrders)
 
     const leverage = this.configService.getLeverage()
     await this.client.setLeverage({ symbol, leverage })
@@ -38,6 +44,8 @@ export class FuturesService {
           process.exit()
         }
       })
+
+    return true
   }
 
   async getDecimalsInfo(symbol: string) {
@@ -59,7 +67,9 @@ export class FuturesService {
 
     const currentPrice = Number(markPrice)
 
-    const quantity = Number(amountUSD / currentPrice * leverage).toFixed(quantityPrecision)
+    const quantity = Number((amountUSD / currentPrice) * leverage).toFixed(
+      quantityPrecision
+    )
 
     return Number(quantity)
   }
@@ -215,13 +225,22 @@ export class FuturesService {
     return { stopLoss: Number(stopLoss), takeProfit: Number(takeProfit) }
   }
 
-  private async cancelOpenOrders(command: Command) {
+  private async getPositionOrders(command: Command) {
     const { symbol, side } = command
 
     const openOrders = await this.client.getAllOpenOrders({ symbol })
     const positionOrders = openOrders.filter(
       (order) => order.positionSide == side
     )
+
+    return positionOrders
+  }
+
+  private async cancelOpenOrders(
+    command: Command,
+    positionOrders: OrderResult[]
+  ) {
+    const { symbol } = command
 
     for (const order of positionOrders) {
       await this.client.cancelOrder({ symbol, orderId: order.orderId })

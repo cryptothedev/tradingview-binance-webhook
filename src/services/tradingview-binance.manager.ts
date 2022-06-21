@@ -5,7 +5,11 @@ export class TradingviewBinanceManager {
   constructor(private futuresService: FuturesService) {}
 
   async execute(command: Command) {
-    await this.futuresService.setupTrade(command)
+    const okToOpenPosition = await this.futuresService.setupTrade(command)
+    if (!okToOpenPosition) {
+      console.log('skipping')
+      return
+    }
 
     const { quantityPrecision, pricePrecision } =
       await this.futuresService.getDecimalsInfo(command.symbol)

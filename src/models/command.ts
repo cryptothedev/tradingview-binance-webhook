@@ -6,4 +6,5 @@ export interface Command {
   amountUSD: number
   setTp: boolean
   setSl: boolean
+  onlyOneOrder: boolean
 }
