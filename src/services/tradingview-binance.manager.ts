@@ -1,10 +1,10 @@
 import { FuturesService } from './futures.service'
-import { Command } from '../models/command'
+import { TradeCommand } from '../models/command'
 
 export class TradingviewBinanceManager {
   constructor(private futuresService: FuturesService) {}
 
-  async execute(command: Command) {
+  async execute(command: TradeCommand) {
     const okToOpenPosition = await this.futuresService.setupTrade(command)
     if (!okToOpenPosition) {
       console.log('skipping')

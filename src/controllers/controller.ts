@@ -3,6 +3,7 @@ import { ConfigService } from '../services/config.service'
 import { parseRawCommand } from '../libs/parseRawCommand'
 import { TradingviewBinanceManager } from '../services/tradingview-binance.manager'
 import { wait } from '../libs/wait'
+import { TradingType } from '../models/command'
 
 export class Controller {
   private commandsInProgressDict: Record<string, boolean> = {}
@@ -37,7 +38,12 @@ export class Controller {
 
         console.log(command)
 
-        await this.tradingviewBinanceManager.execute(command)
+        switch (command.type) {
+          case TradingType.Trade: {
+            await this.tradingviewBinanceManager.execute(command)
+            break
+          }
+        }
 
         res.sendStatus(200)
 

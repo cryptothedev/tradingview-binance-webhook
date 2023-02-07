@@ -1,6 +1,6 @@
 import { ConfigService } from './config.service'
 import { OrderResult, PositionSide, USDMClient } from 'binance'
-import { Command } from '../models/command'
+import { TradeCommand } from '../models/command'
 import { wait } from '../libs/wait'
 
 export class FuturesService {
@@ -11,7 +11,7 @@ export class FuturesService {
     this.client = new USDMClient({ api_key: key, api_secret: secret })
   }
 
-  async setupTrade(command: Command) {
+  async setupTrade(command: TradeCommand) {
     const { symbol, onlyOneOrder } = command
 
     const positionOrders = await this.getPositionOrders(command)
@@ -56,7 +56,7 @@ export class FuturesService {
     return { pricePrecision, quantityPrecision }
   }
 
-  async calculateQuantity(command: Command, quantityPrecision: number) {
+  async calculateQuantity(command: TradeCommand, quantityPrecision: number) {
     const { symbol, amountUSD } = command
     const leverage = this.configService.getLeverage()
 
@@ -74,7 +74,7 @@ export class FuturesService {
     return Number(quantity)
   }
 
-  async long(command: Command, pricePrecision: number, quantity: number) {
+  async long(command: TradeCommand, pricePrecision: number, quantity: number) {
     const { symbol, setTp, setSl } = command
 
     await this.client.submitNewOrder({
@@ -130,7 +130,7 @@ export class FuturesService {
     }
   }
 
-  async short(command: Command, pricePrecision: number, quantity: number) {
+  async short(command: TradeCommand, pricePrecision: number, quantity: number) {
     const { symbol, setTp, setSl } = command
 
     await this.client.submitNewOrder({
@@ -225,7 +225,7 @@ export class FuturesService {
     return { stopLoss: Number(stopLoss), takeProfit: Number(takeProfit) }
   }
 
-  private async getPositionOrders(command: Command) {
+  private async getPositionOrders(command: TradeCommand) {
     const { symbol, side } = command
 
     const openOrders = await this.client.getAllOpenOrders({ symbol })
@@ -237,7 +237,7 @@ export class FuturesService {
   }
 
   private async cancelOpenOrders(
-    command: Command,
+    command: TradeCommand,
     positionOrders: OrderResult[]
   ) {
     const { symbol } = command

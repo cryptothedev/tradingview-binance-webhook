@@ -1,14 +1,38 @@
-import { Command } from '../models/command'
+import {
+  Command,
+  DCACommand,
+  SellDCACommand,
+  TradeCommand,
+  TradingType,
+} from '../models/command'
 import { PositionSide } from 'binance'
 
 export function parseRawCommand(rawCommand: string): Command {
-  const [symbol, side, amountUSD, setTp, setSl, onlyOneOrder] = rawCommand.split('_')
+  const lowerCaseRawCommand = rawCommand.toLowerCase()
 
-  if (
-    [symbol, side, amountUSD, setTp, setSl].some((value) => value == undefined)
-  ) {
-    throw new Error('Command is invalid')
+  // spot - dca
+  const isDCA = rawCommand.startsWith('dca')
+  if (isDCA) {
+    const [_, sell, amount] = lowerCaseRawCommand.split('_')
+
+    // sell - amount is percentage (0 - 100)
+    if (sell === 'sell') {
+      return {
+        percent: Number(amount),
+        type: TradingType.SellDCA,
+      } as SellDCACommand
+    }
+
+    // buy - amount is USD
+    return {
+      amount: Number(amount),
+      type: TradingType.DCA,
+    } as DCACommand
   }
+
+  // futures
+  const [symbol, side, amountUSD, setTp, setSl, onlyOneOrder] =
+    lowerCaseRawCommand.split('_')
 
   return {
     symbol,
@@ -16,6 +40,7 @@ export function parseRawCommand(rawCommand: string): Command {
     amountUSD: Number(amountUSD),
     setTp: setTp === 'true',
     setSl: setSl === 'true',
-    onlyOneOrder: onlyOneOrder === 'true'
-  }
+    onlyOneOrder: onlyOneOrder === 'true',
+    type: TradingType.Trade,
+  } as TradeCommand
 }
