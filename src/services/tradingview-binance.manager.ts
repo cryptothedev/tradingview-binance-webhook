@@ -72,7 +72,10 @@ export class TradingviewBinanceManager {
           continue
         }
 
-        const amountUSD = Math.floor(currentPrice * currentAmount * percent)
+        const amountUSD = Math.ceil(
+          (currentPrice * currentAmount * percent) / 100
+        )
+        console.log(amountUSD)
 
         await this.spotService.sell(pair, amountUSD)
         console.log(`dca sell ${pair} amount ${amountUSD}`)
