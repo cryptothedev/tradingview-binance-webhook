@@ -4,6 +4,7 @@ import { Controller } from './controllers/controller'
 import bodyParser from 'body-parser'
 import { FuturesService } from './services/futures.service'
 import { TradingviewBinanceManager } from './services/tradingview-binance.manager'
+import { SpotService } from './services/spot.service'
 
 async function main() {
   const app = express()
@@ -14,10 +15,12 @@ async function main() {
   // services
   const configService = new ConfigService()
   const futuresService = new FuturesService(configService)
+  const spotService = new SpotService(configService)
 
   // managers
   const tradingviewBinanceManager = new TradingviewBinanceManager(
-    futuresService
+    futuresService,
+    spotService
   )
 
   // controllers

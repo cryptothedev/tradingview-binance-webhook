@@ -40,7 +40,15 @@ export class Controller {
 
         switch (command.type) {
           case TradingType.Trade: {
-            await this.tradingviewBinanceManager.execute(command)
+            await this.tradingviewBinanceManager.trade(command)
+            break
+          }
+          case TradingType.DCA: {
+            await this.tradingviewBinanceManager.dca(command)
+            break
+          }
+          case TradingType.SellDCA: {
+            await this.tradingviewBinanceManager.sellDCA(command)
             break
           }
         }

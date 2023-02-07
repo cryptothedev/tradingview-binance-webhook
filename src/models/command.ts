@@ -19,7 +19,7 @@ export interface TradeCommand {
 }
 
 export interface DCACommand {
-  amount: number
+  amountUSD: number
   type: TradingType.DCA
 }
 

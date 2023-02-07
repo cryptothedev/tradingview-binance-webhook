@@ -28,4 +28,10 @@ export class ConfigService {
   getToken() {
     return process.env['TOKEN']
   }
+
+  getDCAPairs() {
+    return process.env['DCA_PAIRS']
+      .split(',')
+      .map((symbol) => symbol.trim().toUpperCase())
+  }
 }

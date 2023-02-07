@@ -25,7 +25,7 @@ export function parseRawCommand(rawCommand: string): Command {
 
     // buy - amount is USD
     return {
-      amount: Number(amount),
+      amountUSD: Number(amount),
       type: TradingType.DCA,
     } as DCACommand
   }
