@@ -20,7 +20,8 @@ async function main() {
   // managers
   const tradingviewBinanceManager = new TradingviewBinanceManager(
     futuresService,
-    spotService
+    spotService,
+      configService
   )
 
   // controllers
