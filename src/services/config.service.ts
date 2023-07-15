@@ -13,6 +13,11 @@ export class ConfigService {
     return Number(process.env['LEVERAGE'])
   }
 
+  getHedgeMode() {
+    return process.env['HEDGE_MODE']
+  }
+
+
   getTpPercentage() {
     return Number(process.env['TAKE_PROFIT_PERCENTAGE'])
   }

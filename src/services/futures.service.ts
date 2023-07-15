@@ -35,8 +35,10 @@ export class FuturesService {
         }
       })
 
+    const hedgeMode = this.configService.getHedgeMode() === 'yes' ? 'true' : 'false'
+
     await this.client
-      .setPositionMode({ dualSidePosition: 'true' })
+      .setPositionMode({ dualSidePosition: hedgeMode })
       .catch((error) => {
         const isAlreadyHedgeMode =
           error.message === 'No need to change position side.'
